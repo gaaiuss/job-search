@@ -10,17 +10,18 @@
 #   - The folder inside 'src/'
 # ============================
 [project]
-name = "project1"
-version = "0.0.1"
-description = "project1"
-readme = "README.md"
-license = "MIT"
-authors = [{ name = "gaaiuss", email = "caio.gui.castro@gmail.com" }]
-requires-python = ">=3.14"
+authors = [{name = "gaaiuss", email = "caio.gui.castro@gmail.com"}]
 dependencies = [
-    "python-dotenv>=1.1.0",
-    "rich>=15.0.0",
+  "python-dotenv>=1.1.0",
+  "rich>=15.0.0",
+  "selenium>=4.50.0",
 ]
+description = "job-search"
+license = "MIT"
+name = "job-search"
+readme = "README.md"
+requires-python = ">=3.14"
+version = "0.0.1"
 
 [project.optional-dependencies]
 dev = ["ruff", "pyright", "pytest", "pytest-xdist"]
@@ -29,34 +30,33 @@ dev = ["ruff", "pyright", "pytest", "pytest-xdist"]
 # Linting and auto format (Ruff)
 # ============================
 [tool.ruff]
-line-length = 88
-target-version = "py314"
-fix = true
-show-fixes = true
-indent-width = 4
 exclude = ["venv", ".venv", "env", ".env", "node_modules", "__pycache__"]
+fix = true
+indent-width = 4
+line-length = 88
+show-fixes = true
+target-version = "py314"
 
 [tool.ruff.lint]
-select = ["ALL"]
 ignore = [
-    "T201",  # Checks for print statements.
-    "INP001", # Checks for packages that are missing an __init__.py file.
-    "D", # All pydocstyle (D)
-    # Checks that function arguments are annotated with a more specific type 
-    # than Any.
-    "ANN401", 
-    "ERA001", # Checks for commented-out Python code.
-    "A004", # Shadowing Python Builtin.
-    "CPY001", # Missing copyright notice at top of file.
+  "T201", # Checks for print statements.
+  "INP001", # Checks for packages that are missing an __init__.py file.
+  "D", # All pydocstyle (D)
+  "ANN401", # Checks that function arguments are annotated with a more specific type than Any.
+  "ERA001", # Checks for commented-out Python code.
+  "A004", # Shadowing Python Builtin.
+  "CPY001", # Missing copyright notice at top of file.
+  "DTZ005", # `datetime.datetime.now()` called without a `tz` argument
 ]
+select = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["ANN201", "S101"]
 
 [tool.ruff.format]
-quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
+quote-style = "double"
 
 [tool.ruff.lint.isort]
 # Teaches Ruff what is the main package of the project.
@@ -67,25 +67,25 @@ known-first-party = ["my_package"]
 # Typing (Pyright)
 # ============================
 [tool.pyright]
-typeCheckingMode = "strict"
-pythonVersion = "3.14"
-include = ["src", 'tests']
 exclude = [
-    "**/.*",
-    "**/venv",
-    "**/.venv",
-    "**/env",
-    "**/.env",
-    "**/node_modules",
-    "**/__pycache__", 
+  "**/.*",
+  "**/venv",
+  "**/.venv",
+  "**/env",
+  "**/.env",
+  "**/node_modules",
+  "**/__pycache__",
 ]
+executionEnvironments = [{root = "src"}]
+include = ["src", 'tests']
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
 venv = ".venv"
 venvPath = "."
-executionEnvironments = [{ root = "src" }]
 
-# Rules disabled
+# Disabled rules
 # reportMissingTypeStubs = "none" # Missing stubs file
-# reportUnknownMemberType = "none" # Type of parameter partially unknown
+reportUnknownMemberType = "none" # Type of parameter partially unknown
 
 # ============================
 # Tests (Pytest)
@@ -101,8 +101,8 @@ testpaths = ["tests"]
 # Build and Setuptools
 # ============================
 [build-system]
-requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools", "wheel"]
 
 [tool.setuptools.packages.find]
 # Informs setuptools to find the packages inside 'src' folder.
@@ -111,4 +111,4 @@ where = ["src"]
 
 [tool.setuptools]
 # Maps the root folder to 'src'.
-package-dir = { "" = "src" }
+package-dir = {"" = "src"}
