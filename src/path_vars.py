@@ -6,6 +6,12 @@ ROOT_DIR = Path(__file__).parent.parent
 
 # ENV
 DOTENV_PATH = ROOT_DIR / ".env"
-# DRIVER_PATH = ROOT_DIR / "driver" / "chromedriver.exe"
-WIN_DRIVER_PATH = ROOT_DIR / "driver" / "geckodriver.exe"
-LINUX_DRIVER_PATH = ROOT_DIR / "driver" / "geckodriver"
+
+# Drivers
+
+## Windows
+EDGE_DRIVER = ROOT_DIR / "driver" / "msedgedriver.exe"
+CHROME_DRIVER = ROOT_DIR / "driver" / "chromedriver.exe"
+
+## Linux
+FIREFOX_DRIVER = ROOT_DIR / "driver" / "geckodriver"
