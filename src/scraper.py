@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from selenium.webdriver.remote.webdriver import WebDriver
+    from selenium.webdriver.remote.webelement import WebElement
 
 
 class Scraper(ABC):
@@ -57,6 +58,14 @@ class Scraper(ABC):
             ec.element_to_be_clickable(element_id),
         ).click()
 
+    def click_web_element(self, element: WebElement) -> None:
+        WebDriverWait(
+            self.browser,
+            self.time_to_wait,
+        ).until(
+            ec.element_to_be_clickable(element),
+        ).click()
+
     def press_enter(self, element_id: tuple[str, str]) -> None:
         WebDriverWait(
             self.browser,
@@ -65,14 +74,34 @@ class Scraper(ABC):
             ec.element_to_be_clickable(element_id),
         ).send_keys(Keys.ENTER)
 
+    def pause_for_captcha(self) -> None:
+        input("Solve the CAPTCHA manually in the browser, then press ENTER here...")
+
+        WebDriverWait(self.browser, 60).until(
+            lambda driver: (
+                driver.execute_script(
+                    "return document.readyState",
+                )
+                == "complete"
+            ),
+        )
+
+    def find_all_elements(self, element_id: tuple[str, str]) -> list[WebElement]:
+        return WebDriverWait(
+            self.browser,
+            self.time_to_wait,
+        ).until(
+            ec.presence_of_all_elements_located(element_id),
+        )
+
     def get_link(self, element_id: tuple[str, str]) -> str:
         element = WebDriverWait(
             self.browser,
             self.time_to_wait,
         ).until(
-            ec.presence_of_element_located(element_id),
+            ec.element_to_be_clickable(element_id),
         )
-        return element.get_attribute("href") or ""
+        return element.get_attribute("href") or "Link not found"
 
     def switch_to_inner_frame(self, frames: list[tuple[str, str]]) -> None:
         for frame in frames:
