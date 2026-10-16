@@ -3,8 +3,7 @@ from time import sleep
 
 from dotenv import load_dotenv
 
-from firefox_scraper import WebScraper
-from path_vars import DOTENV_PATH, LINUX_DRIVER_PATH
+from path_vars import DOTENV_PATH, FIREFOX_DRIVER
 from scrap_vars import (
     APPLY,
     DATE_POSTED,
@@ -16,6 +15,7 @@ from scrap_vars import (
     PAST_24,
     SHOW_RESULTS,
 )
+from scraper import FirefoxScraper
 
 if __name__ == "__main__":
     # .env
@@ -33,11 +33,11 @@ if __name__ == "__main__":
 
     # webdriver setup
     options: list[str] = ["--start-maximized", "--private"]  # opens on maximized screen
-    web_scraper = WebScraper(
-        driver_path=LINUX_DRIVER_PATH,
+    web_scraper = FirefoxScraper(
+        driver_path=FIREFOX_DRIVER,
         url=URL,
         time_to_wait=TIME_TO_WAIT,
-        options=options,
+        custom_options=options,
     )
 
     # Login session
