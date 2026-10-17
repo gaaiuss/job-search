@@ -1,15 +1,16 @@
 import os
-from time import sleep
 
 from dotenv import load_dotenv
+from rich import print
+from selenium.common import TimeoutException
 
 from path_vars import DOTENV_PATH, FIREFOX_DRIVER
 from scrap_vars import (
     APPLY,
     DATE_POSTED,
     EMAIL_FIELD,
+    JOB_ELEMENT,
     JOB_SEARCH_INPUT,
-    JOB_TAB_BTN,
     LOGIN_BTN,
     PASSWORD_FIELD,
     PAST_24,
@@ -17,38 +18,44 @@ from scrap_vars import (
 )
 from scraper import FirefoxScraper
 
-if __name__ == "__main__":
+
+def main() -> None:
     # .env
     load_dotenv(DOTENV_PATH)
     msg_not_found = ".env variable not found! Check your .env file"
-    EMAIL = os.environ.get("EMAIL", msg_not_found)
-    PASSWORD = os.environ.get("PASSWORD", msg_not_found)
+    email = os.environ.get("EMAIL", msg_not_found)
+    password = os.environ.get("PASSWORD", msg_not_found)
 
     # Linkedin vars
-    URL = "https://www.linkedin.com/login/pt/"
-    JOB = "desenvolvedor junior"
+    url = "https://www.linkedin.com/jobs"
+    job = "desenvolvedor junior"
+    links: list[str] = []
 
     # Web scraping variables (Selenium)
-    TIME_TO_WAIT = 3  # Time limit between each interaction (Timeout)
+    time_to_wait = 10  # Time limit between each interaction (Timeout)
 
     # webdriver setup
-    options: list[str] = ["--start-maximized", "--private"]  # opens on maximized screen
+    options: list[str] = ["--start-maximized", "--private"]
     web_scraper = FirefoxScraper(
         driver_path=FIREFOX_DRIVER,
-        url=URL,
-        time_to_wait=TIME_TO_WAIT,
+        url=url,
+        time_to_wait=time_to_wait,
         custom_options=options,
     )
 
     # Login session
-    # web_scraper.click(SIGNIN_BTN)  # click Next
-    web_scraper.fill_input(EMAIL_FIELD, EMAIL)  # fill email
-    web_scraper.fill_input(PASSWORD_FIELD, PASSWORD)  # fill pass
-    web_scraper.click(LOGIN_BTN)  # click Next
+    web_scraper.fill_input(EMAIL_FIELD, email)  # fill email
+    web_scraper.fill_input(PASSWORD_FIELD, password)  # fill pass
+    web_scraper.click(LOGIN_BTN)  # click sign in
 
     # Job search session
-    web_scraper.click(JOB_TAB_BTN)
-    web_scraper.fill_input(JOB_SEARCH_INPUT, JOB)  # fill email
+    try:  # captcha check
+        web_scraper.fill_input(JOB_SEARCH_INPUT, job)  # fill job description
+    except TimeoutException:
+        web_scraper.pause_for_captcha()  # pause execution until the captcha is done
+        web_scraper.fill_input(JOB_SEARCH_INPUT, job)  # tries again after the check
+
+    web_scraper.press_enter(JOB_SEARCH_INPUT)  # fill job description
 
     ## Filters
     web_scraper.click(DATE_POSTED)
@@ -56,8 +63,16 @@ if __name__ == "__main__":
 
     ## Show results
     web_scraper.click(SHOW_RESULTS)
-    job_link = web_scraper.get_link(APPLY)
 
-    print(job_link)
+    # Get all jobs
+    jobs = web_scraper.find_all_elements(JOB_ELEMENT)
 
-    sleep(TIME_TO_WAIT)
+    for job in jobs:
+        web_scraper.click_web_element(job)
+        links.append(web_scraper.get_link(APPLY))
+
+    print(links)
+
+
+if __name__ == "__main__":
+    main()
